@@ -91,8 +91,6 @@ char *copy_str(char *inStr,short len)
 
 char **tokenize(char* str)
 {
-  int i; //i is our counter
-  i=0;
   
   //Now we have to know all the words from the string then:
   int totalWords = count_words(str);
@@ -100,18 +98,26 @@ char **tokenize(char* str)
   //Once we know the total then we use malloc to allocate.
   char **tokens =(char**)malloc((totalWords+1)*sizeof(char*));
 
-  //use a while loop
+  char *end;
+  str = word_start(str);
+
+  //While loop
+  int i = 0;
   while(i<totalWords){
-   char* startWord = word_start(endWord);
-   char* endWord = word_terminator(startWord);
-    tokens[i] = copy_str(startWord,endWord-startWord);
-    
-    //(endWord-startWord) works as the length
-    tokens[i] = (char *)malloc(((endWord-startWord)+1)*sizeof(char));
-    str = word_terminator(str);
-    i++;
+    //Allocate memory for copy str. (word_terminator(str)-str) works as the length.
+    char *copyStr = (char*)malloc(((word_terminator(str)-str)+1)*sizeof(char));
+
+    //Now we copy the word
+    copyStr = copy_str(str,(word_terminator(str)-str));
+    *tokens = copyStr;
+
+    //Now we prepare for the next word is coming.
+    end = word_terminator(str);
+    str = word_start(end);
+    tokens++;
   }
-  return tokens;
+  *tokens = 0;
+  return tokens - totalWords;
 }//tokenize
 
 void print_tokens(char **tokens)
