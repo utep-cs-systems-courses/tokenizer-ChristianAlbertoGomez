@@ -1,5 +1,6 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
+#include "tokenizer.h"
 
 int space_char(char c)
 {
@@ -8,6 +9,7 @@ int space_char(char c)
   }else{
     return 0; //false
   }
+  return 0;
 }//end of space_char()
 
 int non_space_char(char c)
@@ -17,9 +19,10 @@ int non_space_char(char c)
   }else{
     return 0; //false
   }
+  return 0;
 }//end of non_space_char()
 
-char *word_star(char *str)
+char *word_start(char *str)
 {
   int i;
   i = 0;
@@ -34,14 +37,14 @@ char *word_star(char *str)
     }
     i++;
   }
-  return *(str+i);//Probably wrong
+  return str;//Probably wrong
 }//Word star
 
 char *word_terminator(char *word)
 {
   int i;
   i=0;
-  word = word_star(word);
+  word = word_start(word);
   //Check if word is null
   if(word==NULL){
     return NULL;
@@ -49,7 +52,7 @@ char *word_terminator(char *word)
   while(non_space_char(word[i]==1)){
     i++;
   }
-  return *(word+i);
+  return word;
 }//word terminator
 
 int count_words(char *str)
@@ -62,7 +65,7 @@ int count_words(char *str)
   }
   //Use a for loop
   for(i=0;str[i]!='\0';i++){
-    if(str[i]==' ' && str[i+1]!=''){
+    if(str[i]==' ' && str[i+1]!=' '){
       counter++;
     }//if bracket
   }//for bracket
@@ -125,8 +128,8 @@ void print_tokens(char **tokens)
   int i = 0;
   
   while(tokens[i]!=NULL){
-    printf("tokens[%d] = %s \n",i,tokens[i])
-      i++;
+    printf("tokens[%d]= %s \n",i,tokens[i]);
+    i++;
   }
   return;
 }//print tokens
