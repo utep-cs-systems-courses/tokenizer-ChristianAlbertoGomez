@@ -4,123 +4,95 @@
 
 int space_char(char c)
 {
-  if(c==' '||c =='\t'){
+  if((c==' '||c =='\t')&& c!='\0'){
     return 1; //true
   }else{
     return 0; //false
   }
-  return 0;
 }//end of space_char()
 
 int non_space_char(char c)
 {
-  if(c!=' '||c!='\t'){
-    return 1; //true
+  if((c == ' ' || c == '\t') || c == '\0'){
+    return 0;
   }else{
-    return 0; //false
+    return 1;
   }
-  return 0;
 }//end of non_space_char()
 
 char *word_start(char *str)
 {
-  int i;
-  i = 0;
-  //Checks if str has words
-  if(str==NULL){
-    return NULL;
-  }
-  //Create a while loop
-  while(space_char(str[i]==1)){
-    if(str[i]=='\0'){
-      return NULL;
+  int i=0;
+
+  while(*(str + i)){
+    if (non_space_char(*(str+i))){
+      return str+i;
     }
     i++;
   }
-  return str;//Probably wrong
+  return str+i;
 }//Word star
 
 char *word_terminator(char *word)
 {
-  int i;
-  i=0;
-  word = word_start(word);
-  //Check if word is null
-  if(word==NULL){
-    return NULL;
-  }
-  while(non_space_char(word[i]==1)){
+  int i=0;
+  while(*(word + i)){
+    if(space_char(*(word + i))){
+      return word + i;
+    }
     i++;
   }
-  return word;
+  return word + i;
 }//word terminator
 
 int count_words(char *str)
 {
-  int counter;
-  int i;
-  //checks if str is null
-  if(str==NULL){
-    return 0;
-  }
-  //Use a for loop
-  for(i=0;str[i]!='\0';i++){
-    if(str[i]==' ' && str[i+1]!=' '){
+  char *temp = str;
+
+  int counter = 0;
+  int i = 0;
+  temp = word_start(temp);
+
+  while(*temp){
+    if(non_space_char(*temp)){
       counter++;
-    }//if bracket
-  }//for bracket
+    }
+    temp=word_terminator(temp);
+    temp=word_start(temp);
+  }
+  // printf("%d",count);
   return counter;
 }//counter words
 
 char *copy_str(char *inStr,short len)
 {
+  char *copyStr = malloc(( len + 1) * sizeof(char));
   int i;
-  i=0;
-
-  char *outputStr = (char*)malloc((len+1) *sizeof(char)); //remember cast->char*
   
-  if(outputStr == NULL){
-    return NULL;
+  for (i=0; i < len; i++){
+    copyStr[i] = inStr[i];
   }
-  //do a while loop
-  while(i<len){
-    outputStr[i] = inStr[i];
-    i++;
-  }
-  outputStr[i] = '\0';
-  
-  return outputStr;
+  copyStr[i] = '\0';
+  return copyStr;
 }//copy string
 
 char **tokenize(char* str)
 {
+  int size = count_words(str);
+  char **tokens = malloc((size + 1) * sizeof(char *));
   
-  //Now we have to know all the words from the string then:
-  int totalWords = count_words(str);
-
-  //Once we know the total then we use malloc to allocate.
-  char **tokens =(char**)malloc((totalWords+1)*sizeof(char*));
-
-  char *end;
-  str = word_start(str);
-
-  //While loop
-  int i = 0;
-  while(i<totalWords){
-    //Allocate memory for copy str. (word_terminator(str)-str) works as the length.
-    char *copyStr = (char*)malloc(((word_terminator(str)-str)+1)*sizeof(char));
-
-    //Now we copy the word
-    copyStr = copy_str(str,(word_terminator(str)-str));
-    *tokens = copyStr;
-
-    //Now we prepare for the next word is coming.
-    end = word_terminator(str);
-    str = word_start(end);
-    tokens++;
+  int i;
+  int length;
+  char *p = str;
+  
+  for(i = 0;i < size;i++){
+    p = word_start(p);
+    length = word_terminator(p)-word_start(p); //works as length
+    tokens[i] = copy_str(p, length);
+    p = word_terminator(p);
   }
-  *tokens = 0;
-  return tokens - totalWords;
+  tokens[i] = '\0';
+  return tokens;
 }//tokenize
 
 void print_tokens(char **tokens)

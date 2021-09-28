@@ -2,42 +2,37 @@
 #include <stdlib.h>
 #include "tokenizer.h"
 #include "history.h"
+#define MAX 300
+
 
 int main()
 {
-  char userInput[300];
-  List *list = init_history();
-  
-  int i=0;
-  while(i<3){
-    putchar('$');
-    fgets(userInput,300,stdin);
-    printf("%s\n",userInput);
+  List *history = init_history();
+  char userInput[MAX];
+  while(1){
+  printf("Hello! Please enter 's' to enter a string and display history. '!' to get a node. \n");
+  fgets(userInput,300,stdin);
 
+  if(*userInput=='s'){
+    printf("Enter a String:\n");
+    fgets(userInput,MAX,stdin);
     char* start = word_start(userInput);
     char* end = word_terminator(userInput);
+    char **userTokens = (char**)malloc(end-start);
+    userTokens = tokenize(userInput);
+    print_tokens(userTokens);
+    add_history(history,userInput);
 
-    printf("Number of words: %d\n",count_words(userInput));
-    printf("Start of word: %s\n",start);
-    printf("End of word: %s\n",end);
-
-    int len = count_words(userInput);
-
-    char **user_tokenize = (char**)malloc((len)*sizeof(char));
-    user_tokenize = tokenize(userInput);
-    print_tokens(user_tokenize);
-
-    //TEST LINKEDLIST
-    char *str = "UTEP";
-    add_history(list,str);
-
-    print_history(list);
-
-    printf("Get node value of 1:\n");
-    char *get_node = get_history(list,0);
-    printf("%s\n",get_node);
+    print_history(history);
     
-    i++;
+  }else if(*userInput=='!'){
+    printf("Please enter the number node you want:\n");
+    fgets(userInput,MAX,stdin);
+
+    int i = atoi(userInput);
+    char *getNode = get_history(history,i);
+    printf("Get node-> %s\n",getNode);
+  }
   }
   return 0;
 }
