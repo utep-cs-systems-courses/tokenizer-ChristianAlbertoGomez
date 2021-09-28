@@ -34,6 +34,7 @@ int main()
     
   }else{
     printf("Goodbye!\n");
+    return 0;
   }
   }
   return 0;
