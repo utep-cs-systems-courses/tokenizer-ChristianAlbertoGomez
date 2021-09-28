@@ -6,7 +6,8 @@
 
 List* init_history()
 {
-  List* new_list = (List*)malloc(sizeof(List*)*300);
+  List* new_list = (List*)malloc(sizeof(List*));
+  new_list->root = malloc(sizeof(Item));
   return new_list;
 }
 
@@ -35,7 +36,7 @@ void add_history(List *list,char *str)
 
 char *get_history(List *list, int id)
 {
-  Item* current = list->root;
+  Item* current = list->root->next;
 
   while (current != NULL){
     if (current->id == id){
@@ -47,9 +48,11 @@ char *get_history(List *list, int id)
 
 void print_history(List *list)
 {
-  while(list->root!=NULL){
-    printf("History: %d-->%s\n",list->root->id,list->root->str);
-    list->root = list->root->next;
+  Item *node = list->root->next;
+
+  while (node != NULL) {
+    printf("Entry:%d %s\n", node->id, node->str);
+    node = node->next;
   }
 }
 
@@ -59,6 +62,9 @@ void free_history(List *list)
   Item *currentNode;
 
   while(list->root!=NULL){
+    if(list->root==NULL){
+      continue;
+    }
     currentNode = list->root; //current node works as a temp variable.
     list->root->next;
     free(currentNode->str); //We free the stored string in the current node.
